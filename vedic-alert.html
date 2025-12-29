@@ -690,9 +690,10 @@
             }
         }
         
-        // Get location
+        // Get location immediately and prominently
         function getLocation() {
             if ('geolocation' in navigator) {
+                // Request location immediately on page load
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         currentLocation = {
@@ -708,14 +709,24 @@
                     },
                     (error) => {
                         document.getElementById('locationText').textContent = 
-                            'Location access denied';
-                        alert('Please enable location access to use this app');
+                            '⚠️ Please enable location in browser settings';
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
                     }
                 );
             } else {
-                alert('Geolocation is not supported by your browser');
+                document.getElementById('locationText').textContent = 
+                    '⚠️ Browser does not support location';
             }
         }
+        
+        // Request location immediately when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            getLocation();
+        });
         
         // PWA Install
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -742,9 +753,6 @@
         if ('Notification' in window) {
             Notification.requestPermission();
         }
-        
-        // Initialize
-        getLocation();
         
         // Register service worker
         if ('serviceWorker' in navigator) {
